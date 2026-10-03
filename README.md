@@ -116,6 +116,8 @@ python tools/match.py <参考图.png> render/shot_final_beauty.png render/anchor
 
 **线上地址**：https://starpark-coach-3d.app.workbuddy.host/
 
+**线上地址**：https://starpark-coach-3d.app.workbuddy.host/
+
 **入口**：`index.html`（3D 交互） · `gallery.html`（渲染图集与迭代记录）
 
 | 功能 | 说明 |
