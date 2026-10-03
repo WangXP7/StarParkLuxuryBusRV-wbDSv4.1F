@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+
+# Blender
+*.blend1
+*.blend2
+
+# intermediate / diagnostic artefacts
+_iter_blend/
+render/anchors/
+render/iteration_log/
+tools/crops/
+
+# OS
+Thumbs.db
+.DS_Store
