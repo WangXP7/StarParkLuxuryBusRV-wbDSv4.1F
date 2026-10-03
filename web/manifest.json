@@ -1,0 +1,526 @@
+{
+ "meshes": [
+  {
+   "name": "SHELL__BodyShell",
+   "group": "SHELL",
+   "verts": 4492,
+   "tris": 8600
+  },
+  {
+   "name": "SHELL__FrontCap",
+   "group": "SHELL",
+   "verts": 384,
+   "tris": 640
+  },
+  {
+   "name": "SHELL__RearCap",
+   "group": "SHELL",
+   "verts": 320,
+   "tris": 574
+  },
+  {
+   "name": "BODY__body_pearl",
+   "group": "BODY",
+   "verts": 280,
+   "tris": 528
+  },
+  {
+   "name": "SHELL__WindGasket",
+   "group": "SHELL",
+   "verts": 64,
+   "tris": 124
+  },
+  {
+   "name": "SHELL__WindGlass",
+   "group": "SHELL",
+   "verts": 64,
+   "tris": 124
+  },
+  {
+   "name": "BODY__black_plastic",
+   "group": "BODY",
+   "verts": 1008,
+   "tris": 1724
+  },
+  {
+   "name": "BODY__interior_wall",
+   "group": "BODY",
+   "verts": 48,
+   "tris": 92
+  },
+  {
+   "name": "SHELL__RearGasket",
+   "group": "SHELL",
+   "verts": 48,
+   "tris": 92
+  },
+  {
+   "name": "SHELL__RearGlass",
+   "group": "SHELL",
+   "verts": 48,
+   "tris": 92
+  },
+  {
+   "name": "BODY__led_red",
+   "group": "BODY",
+   "verts": 24,
+   "tris": 36
+  },
+  {
+   "name": "CHAS__led_red",
+   "group": "CHAS",
+   "verts": 16,
+   "tris": 24
+  },
+  {
+   "name": "CHAS__skirt_graphite",
+   "group": "CHAS",
+   "verts": 296,
+   "tris": 540
+  },
+  {
+   "name": "CHAS__led_amber",
+   "group": "CHAS",
+   "verts": 16,
+   "tris": 24
+  },
+  {
+   "name": "BODY__skirt_graphite",
+   "group": "BODY",
+   "verts": 1232,
+   "tris": 2368
+  },
+  {
+   "name": "BODY__chrome",
+   "group": "BODY",
+   "verts": 976,
+   "tris": 1872
+  },
+  {
+   "name": "SHELL__gasket_-1_0",
+   "group": "SHELL",
+   "verts": 128,
+   "tris": 256
+  },
+  {
+   "name": "SHELL__glass_-1_0",
+   "group": "SHELL",
+   "verts": 48,
+   "tris": 92
+  },
+  {
+   "name": "SHELL__gasket_-1_1",
+   "group": "SHELL",
+   "verts": 128,
+   "tris": 256
+  },
+  {
+   "name": "SHELL__glass_-1_1",
+   "group": "SHELL",
+   "verts": 48,
+   "tris": 92
+  },
+  {
+   "name": "SHELL__gasket_-1_2",
+   "group": "SHELL",
+   "verts": 128,
+   "tris": 256
+  },
+  {
+   "name": "SHELL__glass_-1_2",
+   "group": "SHELL",
+   "verts": 48,
+   "tris": 92
+  },
+  {
+   "name": "SHELL__gasket_-1_3",
+   "group": "SHELL",
+   "verts": 128,
+   "tris": 256
+  },
+  {
+   "name": "SHELL__glass_-1_3",
+   "group": "SHELL",
+   "verts": 48,
+   "tris": 92
+  },
+  {
+   "name": "SHELL__gasket_1_0",
+   "group": "SHELL",
+   "verts": 128,
+   "tris": 256
+  },
+  {
+   "name": "SHELL__glass_1_0",
+   "group": "SHELL",
+   "verts": 48,
+   "tris": 92
+  },
+  {
+   "name": "SHELL__gasket_1_1",
+   "group": "SHELL",
+   "verts": 128,
+   "tris": 256
+  },
+  {
+   "name": "SHELL__glass_1_1",
+   "group": "SHELL",
+   "verts": 48,
+   "tris": 92
+  },
+  {
+   "name": "SHELL__gasket_1_2",
+   "group": "SHELL",
+   "verts": 128,
+   "tris": 256
+  },
+  {
+   "name": "SHELL__glass_1_2",
+   "group": "SHELL",
+   "verts": 48,
+   "tris": 92
+  },
+  {
+   "name": "SHELL__gasket_1_3",
+   "group": "SHELL",
+   "verts": 128,
+   "tris": 256
+  },
+  {
+   "name": "SHELL__glass_1_3",
+   "group": "SHELL",
+   "verts": 48,
+   "tris": 92
+  },
+  {
+   "name": "SHELL__Skirt_-1",
+   "group": "SHELL",
+   "verts": 2668,
+   "tris": 5332
+  },
+  {
+   "name": "CHAS__black_plastic",
+   "group": "CHAS",
+   "verts": 616,
+   "tris": 1164
+  },
+  {
+   "name": "SHELL__Skirt_1",
+   "group": "SHELL",
+   "verts": 2668,
+   "tris": 5332
+  },
+  {
+   "name": "BODY__led_amber",
+   "group": "BODY",
+   "verts": 80,
+   "tris": 120
+  },
+  {
+   "name": "CHAS__engine_cast",
+   "group": "CHAS",
+   "verts": 2318,
+   "tris": 4488
+  },
+  {
+   "name": "CHAS__alu_brushed",
+   "group": "CHAS",
+   "verts": 588,
+   "tris": 1116
+  },
+  {
+   "name": "CHAS__chrome",
+   "group": "CHAS",
+   "verts": 820,
+   "tris": 1552
+  },
+  {
+   "name": "CHAS__tire",
+   "group": "CHAS",
+   "verts": 4608,
+   "tris": 9216
+  },
+  {
+   "name": "CHAS__wheel_bronze",
+   "group": "CHAS",
+   "verts": 12480,
+   "tris": 24240
+  },
+  {
+   "name": "ROOF__alu_brushed",
+   "group": "ROOF",
+   "verts": 426,
+   "tris": 836
+  },
+  {
+   "name": "INT__carpet",
+   "group": "INT",
+   "verts": 16,
+   "tris": 24
+  },
+  {
+   "name": "INT__ceiling",
+   "group": "INT",
+   "verts": 488,
+   "tris": 952
+  },
+  {
+   "name": "BODY__lum_warm",
+   "group": "BODY",
+   "verts": 16,
+   "tris": 24
+  },
+  {
+   "name": "BODY__trim_satin_wood",
+   "group": "BODY",
+   "verts": 16,
+   "tris": 24
+  },
+  {
+   "name": "INT__interior_wall",
+   "group": "INT",
+   "verts": 112,
+   "tris": 168
+  },
+  {
+   "name": "INT__walnut",
+   "group": "INT",
+   "verts": 968,
+   "tris": 1860
+  },
+  {
+   "name": "INT__lum_copper",
+   "group": "INT",
+   "verts": 88,
+   "tris": 132
+  },
+  {
+   "name": "BODY__oak_flat",
+   "group": "BODY",
+   "verts": 256,
+   "tris": 384
+  },
+  {
+   "name": "XD__lum_amber",
+   "group": "XD",
+   "verts": 48,
+   "tris": 72
+  },
+  {
+   "name": "XD__leather_cream",
+   "group": "XD",
+   "verts": 64,
+   "tris": 96
+  },
+  {
+   "name": "XD__walnut_honey",
+   "group": "XD",
+   "verts": 144,
+   "tris": 216
+  },
+  {
+   "name": "XD__interior_wall",
+   "group": "XD",
+   "verts": 16,
+   "tris": 24
+  },
+  {
+   "name": "XD__stone_flat",
+   "group": "XD",
+   "verts": 32,
+   "tris": 48
+  },
+  {
+   "name": "XD__oak_flat",
+   "group": "XD",
+   "verts": 80,
+   "tris": 120
+  },
+  {
+   "name": "XD__gold_champagne",
+   "group": "XD",
+   "verts": 32,
+   "tris": 48
+  },
+  {
+   "name": "INT__marble_white",
+   "group": "INT",
+   "verts": 552,
+   "tris": 1060
+  },
+  {
+   "name": "INT__oak_flat",
+   "group": "INT",
+   "verts": 72,
+   "tris": 108
+  },
+  {
+   "name": "INT__black_plastic",
+   "group": "INT",
+   "verts": 580,
+   "tris": 1116
+  },
+  {
+   "name": "INT__leather_cream",
+   "group": "INT",
+   "verts": 2280,
+   "tris": 4468
+  },
+  {
+   "name": "INT__lum_white",
+   "group": "INT",
+   "verts": 8,
+   "tris": 12
+  },
+  {
+   "name": "INT__alu_brushed",
+   "group": "INT",
+   "verts": 424,
+   "tris": 808
+  },
+  {
+   "name": "INT__gold_champagne",
+   "group": "INT",
+   "verts": 328,
+   "tris": 608
+  },
+  {
+   "name": "CHAS__interior_wall",
+   "group": "CHAS",
+   "verts": 40,
+   "tris": 60
+  },
+  {
+   "name": "BODY__marble_white",
+   "group": "BODY",
+   "verts": 8,
+   "tris": 12
+  },
+  {
+   "name": "INT__trim_satin_wood",
+   "group": "INT",
+   "verts": 160,
+   "tris": 304
+  },
+  {
+   "name": "INT__walnut_honey",
+   "group": "INT",
+   "verts": 224,
+   "tris": 432
+  },
+  {
+   "name": "INT__chrome",
+   "group": "INT",
+   "verts": 68,
+   "tris": 124
+  },
+  {
+   "name": "INT__glass_shower",
+   "group": "INT",
+   "verts": 16,
+   "tris": 24
+  },
+  {
+   "name": "INT__lens_head",
+   "group": "INT",
+   "verts": 8,
+   "tris": 12
+  },
+  {
+   "name": "INT__lum_warm",
+   "group": "INT",
+   "verts": 88,
+   "tris": 132
+  },
+  {
+   "name": "CHAS__gold_champagne",
+   "group": "CHAS",
+   "verts": 60,
+   "tris": 108
+  },
+  {
+   "name": "XD__lum_copper",
+   "group": "XD",
+   "verts": 96,
+   "tris": 144
+  },
+  {
+   "name": "ROOF__body_pearl",
+   "group": "ROOF",
+   "verts": 944,
+   "tris": 1868
+  },
+  {
+   "name": "ROOF__roofkit",
+   "group": "ROOF",
+   "verts": 706,
+   "tris": 1368
+  },
+  {
+   "name": "ROOF__chrome",
+   "group": "ROOF",
+   "verts": 184,
+   "tris": 336
+  },
+  {
+   "name": "ROOF__black_plastic",
+   "group": "ROOF",
+   "verts": 1640,
+   "tris": 3200
+  },
+  {
+   "name": "ROOF__led_drl",
+   "group": "ROOF",
+   "verts": 8,
+   "tris": 12
+  },
+  {
+   "name": "ROOF__lens_head",
+   "group": "ROOF",
+   "verts": 64,
+   "tris": 120
+  },
+  {
+   "name": "ROOF__skirt_graphite",
+   "group": "ROOF",
+   "verts": 80,
+   "tris": 120
+  },
+  {
+   "name": "ROOF__gunmetal",
+   "group": "ROOF",
+   "verts": 548,
+   "tris": 1060
+  },
+  {
+   "name": "BODY__band_champagne",
+   "group": "BODY",
+   "verts": 48,
+   "tris": 72
+  },
+  {
+   "name": "BODY__gold_champagne",
+   "group": "BODY",
+   "verts": 208,
+   "tris": 384
+  },
+  {
+   "name": "BODY__lens_head",
+   "group": "BODY",
+   "verts": 120,
+   "tris": 216
+  },
+  {
+   "name": "BODY__led_drl",
+   "group": "BODY",
+   "verts": 128,
+   "tris": 216
+  },
+  {
+   "name": "BODY__roofkit",
+   "group": "BODY",
+   "verts": 384,
+   "tris": 752
+  }
+ ]
+}

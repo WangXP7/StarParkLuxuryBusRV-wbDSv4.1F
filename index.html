@@ -2,280 +2,613 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>星泊豪华大巴房车 · 程序化 3D 重建</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>星泊豪华大巴房车 · 可交互 3D 模型</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%231d1815%27/%3E%3Cpath d=%27M4 20h24v4H4z%27 fill=%27%23d9a95c%27/%3E%3Crect x=%276%27 y=%2711%27 width=%2720%27 height=%277%27 rx=%272%27 fill=%27%23efe0cb%27/%3E%3C/svg%3E">
 <style>
   :root{
-    --bg:#141110; --bg2:#1c1815; --card:#221d19; --card2:#2a231d;
-    --line:#3a3029; --txt:#efe6da; --dim:#a8968a;
-    --amber:#d9a95c; --amber2:#f0c47a; --orange:#e08a45; --cream:#efe0cb;
+    --amber:#d9a95c; --amber2:#f2c883; --orange:#e08a45;
+    --txt:#efe6da; --dim:#a2917f; --panel:#1d1815ee; --line:#3d3229;
   }
-  *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{
-    margin:0; background:
-      radial-gradient(1200px 600px at 78% -8%, #2e2419 0%, transparent 62%),
-      radial-gradient(900px 500px at 8% 12%, #241d17 0%, transparent 58%),
-      var(--bg);
-    color:var(--txt);
-    font-family:"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
-    line-height:1.62; -webkit-font-smoothing:antialiased;
-  }
-  .wrap{max-width:1180px;margin:0 auto;padding:0 26px}
-  a{color:var(--amber2)}
-  img{max-width:100%;display:block}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%;overflow:hidden;background:#0f0d0c;color:var(--txt);
+    font-family:"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif}
+  canvas{display:block}
+  #app{position:fixed;inset:0}
 
-  /* ---------- hero ---------- */
-  header{padding:74px 0 30px;border-bottom:1px solid var(--line)}
-  .kicker{
-    font-size:12.5px;letter-spacing:.22em;text-transform:uppercase;
-    color:var(--amber);margin:0 0 16px
-  }
-  h1{
-    margin:0 0 14px;font-size:clamp(30px,4.6vw,52px);line-height:1.12;
-    font-weight:700;letter-spacing:.01em;
-    background:linear-gradient(96deg,#fbeed6 0%,var(--amber2) 44%,var(--orange) 100%);
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-  }
-  .lede{max-width:760px;color:var(--dim);font-size:16.5px;margin:0 0 26px}
-  .chips{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:34px}
-  .chip{
-    font-size:12.5px;padding:6px 13px;border-radius:999px;
-    background:#2b231c;border:1px solid #46392d;color:#e2d2bb
-  }
-  .chip b{color:var(--amber2);font-weight:600}
+  /* ---------- loading ---------- */
+  #boot{position:fixed;inset:0;display:grid;place-items:center;z-index:60;
+    background:radial-gradient(1200px 700px at 70% 10%,#2a2117,#0e0c0b 70%);transition:opacity .6s}
+  #boot.gone{opacity:0;pointer-events:none}
+  .bootbox{text-align:center;width:min(420px,80vw)}
+  .bootbox h1{margin:0 0 6px;font-size:20px;font-weight:650;letter-spacing:.04em;
+    background:linear-gradient(96deg,#fbeed6,var(--amber2) 50%,var(--orange));
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .bootbox p{margin:0 0 22px;font-size:12.5px;color:var(--dim);letter-spacing:.16em;text-transform:uppercase}
+  .bar{height:3px;border-radius:99px;background:#2e261e;overflow:hidden}
+  .bar i{display:block;height:100%;width:0;border-radius:99px;
+    background:linear-gradient(90deg,var(--amber),var(--orange));transition:width .25s}
+  #bootmsg{margin-top:12px;font-size:12px;color:#7d6b5c;min-height:16px}
 
-  /* ---------- sections ---------- */
-  section{padding:58px 0;border-bottom:1px solid var(--line)}
-  h2{
-    margin:0 0 8px;font-size:clamp(20px,2.4vw,27px);font-weight:650;
-    letter-spacing:.01em;color:var(--cream)
-  }
-  h2 .n{
-    display:inline-block;width:30px;color:var(--orange);
-    font-variant-numeric:tabular-nums
-  }
-  .sub{color:var(--dim);margin:0 0 30px;font-size:14.5px}
+  /* ---------- top bar ---------- */
+  #top{position:fixed;top:0;left:0;right:0;z-index:30;display:flex;gap:14px;
+    align-items:center;padding:14px 18px;pointer-events:none}
+  #top .brand{pointer-events:auto}
+  #top .brand b{display:block;font-size:15px;font-weight:650;letter-spacing:.02em}
+  #top .brand span{display:block;font-size:11px;color:var(--dim);letter-spacing:.14em;text-transform:uppercase}
+  #top .spacer{flex:1}
+  .tbtn{pointer-events:auto;font-size:12.5px;padding:8px 14px;border-radius:9px;cursor:pointer;
+    background:#241d18cc;border:1px solid var(--line);color:#e3d3bd;
+    backdrop-filter:blur(9px);transition:.2s;white-space:nowrap}
+  .tbtn:hover{border-color:#6a5336;color:#fff}
+  .tbtn.on{background:#3a2c1ccc;border-color:var(--amber);color:var(--amber2)}
 
-  /* ---------- cards ---------- */
-  .shot{
-    background:linear-gradient(180deg,var(--card2),var(--card));
-    border:1px solid var(--line);border-radius:15px;overflow:hidden;
-    box-shadow:0 14px 40px -22px #000, 0 0 0 1px #ffffff08 inset;
-    transition:transform .35s cubic-bezier(.2,.8,.3,1),box-shadow .35s,border-color .35s;
-  }
-  .shot:hover{
-    transform:translateY(-5px);border-color:#5b4732;
-    box-shadow:0 26px 60px -26px #000, 0 0 34px -12px #d9a95c55
-  }
-  .shot img{width:100%;background:#100d0b}
-  .shot figcaption{
-    padding:13px 16px;font-size:13.5px;color:#cdbcab;
-    border-top:1px solid var(--line);display:flex;justify-content:space-between;
-    gap:12px;align-items:baseline
-  }
-  .shot figcaption span{color:#7d6b5c;font-size:12px}
-  figure{margin:0}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-  @media(max-width:880px){.grid2,.grid3{grid-template-columns:1fr}}
+  /* ---------- left dock ---------- */
+  #dock{position:fixed;left:18px;top:50%;transform:translateY(-50%);z-index:30;
+    display:flex;flex-direction:column;gap:7px;padding:11px;border-radius:14px;
+    background:var(--panel);border:1px solid var(--line);backdrop-filter:blur(11px);
+    box-shadow:0 20px 50px -28px #000;max-height:82vh;overflow:auto}
+  #dock .grp{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#7d6b5c;
+    padding:9px 8px 3px}
+  #dock .grp:first-child{padding-top:2px}
+  .dbtn{display:flex;align-items:center;gap:9px;font-size:12.5px;padding:7px 12px 7px 9px;
+    border-radius:8px;cursor:pointer;background:transparent;border:1px solid transparent;
+    color:#cdbcab;transition:.18s;white-space:nowrap}
+  .dbtn:hover{background:#2b231c;color:#fff}
+  .dbtn.on{background:#33281c;border-color:#5d472f;color:var(--amber2)}
+  .dbtn i{width:5px;height:5px;border-radius:99px;background:#5c4b3a;flex:0 0 auto}
+  .dbtn.on i{background:var(--amber);box-shadow:0 0 8px var(--amber)}
 
-  /* ---------- table ---------- */
-  .tbl{width:100%;border-collapse:collapse;font-size:14px;margin-top:6px}
-  .tbl th,.tbl td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left}
-  .tbl th{color:var(--dim);font-weight:500;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase}
-  .tbl td:first-child{color:#dccdb9}
-  .sw{display:inline-block;width:44px;height:15px;border-radius:4px;
-      vertical-align:-2px;margin-right:9px;border:1px solid #ffffff1f}
-  .num{font-variant-numeric:tabular-nums}
-  .good{color:#8fd08a;font-weight:600}
-  .mono{font-family:"Cascadia Mono",Consolas,monospace;font-size:13px;color:#cbb9a5}
+  /* ---------- hud ---------- */
+  #hud{position:fixed;right:18px;bottom:18px;z-index:30;font-size:11.5px;color:#8b7a6a;
+    text-align:right;line-height:1.75;pointer-events:none}
+  #hud b{color:var(--amber2);font-weight:600}
+  #hint{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:30;
+    font-size:12px;color:#9c8b7a;background:#1b1613d9;border:1px solid var(--line);
+    padding:7px 15px;border-radius:99px;backdrop-filter:blur(9px);transition:.3s;white-space:nowrap}
+  #hint.hide{opacity:0}
 
-  /* ---------- steps ---------- */
-  ol.steps{margin:0;padding-left:0;list-style:none;counter-reset:s}
-  ol.steps li{
-    counter-increment:s;position:relative;padding:0 0 22px 46px;
-    border-left:1px solid var(--line);margin-left:12px
-  }
-  ol.steps li:last-child{border-left-color:transparent;padding-bottom:0}
-  ol.steps li::before{
-    content:counter(s,decimal-leading-zero);position:absolute;left:-13px;top:0;
-    width:26px;height:26px;border-radius:8px;background:#2e2419;border:1px solid #52402c;
-    color:var(--amber2);font-size:11.5px;display:grid;place-items:center;
-    font-variant-numeric:tabular-nums
-  }
-  ol.steps b{color:var(--cream);font-weight:600}
-  ol.steps p{margin:3px 0 0;color:var(--dim);font-size:14px}
+  /* ---------- crosshair ---------- */
+  #cross{position:fixed;left:50%;top:50%;width:16px;height:16px;margin:-8px 0 0 -8px;
+    z-index:25;display:none;pointer-events:none}
+  #cross:before,#cross:after{content:'';position:absolute;background:#f0d9a8cc}
+  #cross:before{left:7px;top:0;width:2px;height:16px}
+  #cross:after{left:0;top:7px;width:16px;height:2px}
+  body.walk #cross{display:block}
 
-  footer{padding:44px 0 68px;color:#7d6b5c;font-size:13px}
-  footer code{color:#cbb9a5}
+  #err{position:fixed;inset:0;display:none;place-items:center;z-index:70;background:#100d0b;
+    padding:30px;text-align:center}
+  #err div{max-width:520px;color:#e0cdb6;font-size:14px;line-height:1.7}
+  #err b{color:#e08a45}
+
+  @media(max-width:820px){
+    #dock{left:8px;padding:7px;gap:4px;border-radius:11px}
+    .dbtn{font-size:11.5px;padding:6px 9px}
+    #top{padding:10px 12px;gap:8px}
+    #top .brand span{display:none}
+    .tbtn{padding:7px 10px;font-size:11.5px}
+    #hud{display:none}
+  }
 </style>
 </head>
 <body>
+<div id="app"></div>
 
-<header>
-  <div class="wrap">
-    <p class="kicker">Procedural 3D · Blender Eevee · 2026</p>
+<div id="boot">
+  <div class="bootbox">
     <h1>星泊豪华大巴房车</h1>
-    <p class="lede">
-      依据设定图集 <b>D_星泊豪华大巴房车</b> 全程序化重建：几何由 bpy/bmesh 生成，
-      材质全部为程序化节点，未导入任何外部模型、贴图或 HDRI。
-      本轮重点是把外观的<b>颜色与质感</b>对齐主参考图，用取样 + 光学换算做闭环校色，
-      平均色差从 129/255 收敛到 <b>7.3/255</b>。
-    </p>
-    <div class="chips">
-      <span class="chip">外形 <b>12.00 × 2.55 × 3.62 m</b></span>
-      <span class="chip">含车顶设备 <b>4.13 m</b></span>
-      <span class="chip">三轴六轮</span>
-      <span class="chip"><b>772</b> 对象 / 约 <b>4.8 万</b> 顶点</span>
-      <span class="chip">Eevee · 2560×1440 · 224 spp</span>
-      <span class="chip">迭代 <b>33</b> 轮</span>
-      <span class="chip">平均色差 <b>Δ 7.3 / 255</b></span>
-    </div>
+    <p>Interactive 3D</p>
+    <div class="bar"><i id="bootbar"></i></div>
+    <div id="bootmsg">正在载入模型…</div>
   </div>
-</header>
+</div>
 
-<section id="compare">
-  <div class="wrap">
-    <h2><span class="n">01</span>参考图 / 渲染 并排</h2>
-    <p class="sub">上图：设定图 D_01（整车主参考） · 下图：本工程渲染。机位、配色、腰线、下裙、车窗、轮毂逐项对齐。</p>
-    <figure class="shot">
-      <img src="render/compare_ref_vs_render.png" alt="参考图与渲染并排对比">
-      <figcaption>参考图 vs 渲染<span>同尺寸上下拼接</span></figcaption>
-    </figure>
-  </div>
-</section>
+<div id="err"><div id="errmsg"></div></div>
 
-<section id="hero">
-  <div class="wrap">
-    <h2><span class="n">02</span>主图</h2>
-    <p class="sub">对齐 D_01 的机位：方位角 −48°，仰角 9°，48–50 mm 广角近距，得到参考图那种强透视浅俯视。</p>
-    <figure class="shot">
-      <img src="render/shot_final_beauty.png" alt="主渲染图">
-      <figcaption>主图 · 三分之四视角<span>2560 × 1440</span></figcaption>
-    </figure>
-  </div>
-</section>
+<div id="top">
+  <div class="brand"><b>星泊豪华大巴房车</b><span>可交互 3D 模型 · 可进入车内</span></div>
+  <div class="spacer"></div>
+  <div class="tbtn" id="btnRoof">车顶设备</div>
+  <div class="tbtn" id="btnXray">剖切</div>
+  <div class="tbtn" id="btnInside">进入车内</div>
+  <div class="tbtn" id="btnSpin">自动旋转</div>
+  <div class="tbtn" onclick="location.href='gallery.html'">渲染图集</div>
+</div>
 
-<section id="views">
-  <div class="wrap">
-    <h2><span class="n">03</span>多视角</h2>
-    <p class="sub">车头、车尾、剖视（内部结构）、底盘仰视（车架 / 发动机 / 悬架 / 传动）、前侧低角。</p>
-    <div class="grid2" style="margin-bottom:20px">
-      <figure class="shot">
-        <img src="render/shot_final_f34.png" alt="前 3/4" loading="lazy">
-        <figcaption>前 3/4 视角<span>风挡 / 灯组 / 车门 / 后视镜</span></figcaption>
-      </figure>
-      <figure class="shot">
-        <img src="render/shot_final_rear34.png" alt="后 3/4" loading="lazy">
-        <figcaption>后 3/4 视角<span>尾库门 / 尾灯 / 炮塔 / 无人机平台</span></figcaption>
-      </figure>
-    </div>
-    <div class="grid3">
-      <figure class="shot">
-        <img src="render/shot_final_cut.png" alt="剖视" loading="lazy">
-        <figcaption>剖视<span>驾驶舱→会客→厨卫→卧铺</span></figcaption>
-      </figure>
-      <figure class="shot">
-        <img src="render/shot_final_chassis.png" alt="底盘仰视" loading="lazy">
-        <figcaption>底盘仰视<span>车架 / 车桥 / 排气 / 发动机</span></figcaption>
-      </figure>
-      <figure class="shot">
-        <img src="render/shot_final_under.png" alt="前侧低角" loading="lazy">
-        <figcaption>前侧低角<span>地面反射与接触阴影</span></figcaption>
-      </figure>
-    </div>
-  </div>
-</section>
+<div id="dock"></div>
+<div id="cross"></div>
+<div id="hud">
+  <div>拖拽 <b>旋转</b> · 滚轮 <b>缩放</b> · 右键 <b>平移</b></div>
+  <div>车内：<b>WASD</b> 移动 · <b>鼠标</b> 转视角 · <b>Shift</b> 加速 · <b>Esc</b> 退出</div>
+</div>
+<div id="hint">点击左侧「进入车内」可走进车厢内部</div>
 
-<section id="color">
-  <div class="wrap">
-    <h2><span class="n">04</span>配色对齐</h2>
-    <p class="sub">
-      场景由近似均匀的暖奶油环境照明，此时 <span class="mono">渲染值 = 反照率 × 环境辐亮度</span>，
-      所以 <span class="mono">albedo = target / ENV</span>。参考图逐点取样 → 反推材质基色 → 渲染后回测色差。
-    </p>
-    <table class="tbl">
-      <thead><tr><th>部位</th><th>参考图实测</th><th>本工程渲染</th><th class="num">Δ</th></tr></thead>
-      <tbody>
-        <tr><td>车身上部</td><td><i class="sw" style="background:#EBDCCE"></i>#EBDCCE</td><td><i class="sw" style="background:#EBDACB"></i>#EBDACB</td><td class="num good">1.7</td></tr>
-        <tr><td>车身下部</td><td><i class="sw" style="background:#ECDACA"></i>#ECDACA</td><td><i class="sw" style="background:#E7D6C7"></i>#E7D6C7</td><td class="num good">4.0</td></tr>
-        <tr><td>腰线（香槟驼）</td><td><i class="sw" style="background:#CFAB89"></i>#CFAB89</td><td><i class="sw" style="background:#D7AA80"></i>#D7AA80</td><td class="num good">6.0</td></tr>
-        <tr><td>下裙（深暖灰）</td><td><i class="sw" style="background:#574A42"></i>#574A42</td><td><i class="sw" style="background:#4C453F"></i>#4C453F</td><td class="num good">6.3</td></tr>
-        <tr><td>下裙下缘</td><td><i class="sw" style="background:#5C4F48"></i>#5C4F48</td><td><i class="sw" style="background:#504841"></i>#504841</td><td class="num good">8.7</td></tr>
-        <tr><td>轮胎</td><td><i class="sw" style="background:#302923"></i>#302923</td><td><i class="sw" style="background:#2A2623"></i>#2A2623</td><td class="num good">3.0</td></tr>
-        <tr><td>轮圈（暗青铜）</td><td><i class="sw" style="background:#8E725D"></i>#8E725D</td><td><i class="sw" style="background:#876B56"></i>#876B56</td><td class="num good">7.0</td></tr>
-        <tr><td>车窗（暖光内装）</td><td><i class="sw" style="background:#764620"></i>#764620</td><td><i class="sw" style="background:#675344"></i>#675344</td><td class="num">21.3</td></tr>
-        <tr><td colspan="3"><b>平均</b></td><td class="num good">7.3</td></tr>
-      </tbody>
-    </table>
-  </div>
-</section>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
 
-<section id="iter">
-  <div class="wrap">
-    <h2><span class="n">05</span>迭代过程</h2>
-    <p class="sub">
-      33 轮。第 1 帧是初版——车身壳体的拉伸漏传了高度中心，整个车体被建在地面以下，
-      画面上看到的其实只是前后端盖加内饰。
-    </p>
-    <figure class="shot" style="margin-bottom:20px">
-      <img src="render/iter/iteration_sheet.jpg" alt="迭代总览" loading="lazy">
-      <figcaption>全部迭代帧总览<span>50 帧</span></figcaption>
-    </figure>
-    <div class="grid3">
-      <figure class="shot"><img src="render/iter/v1.jpg" alt="v1" loading="lazy"><figcaption>初版<span>车体被埋在地下</span></figcaption></figure>
-      <figure class="shot"><img src="render/iter/m01.jpg" alt="m01" loading="lazy"><figcaption>第 1 轮<span>换色调映射 + 重建材质</span></figcaption></figure>
-      <figure class="shot"><img src="render/iter/m05.jpg" alt="m05" loading="lazy"><figcaption>第 5 轮<span>压制车内漏光</span></figcaption></figure>
-      <figure class="shot"><img src="render/iter/m09.jpg" alt="m09" loading="lazy"><figcaption>第 9 轮<span>车窗暖光</span></figcaption></figure>
-      <figure class="shot"><img src="render/iter/m16.jpg" alt="m16" loading="lazy"><figcaption>第 16 轮<span>广角透视</span></figcaption></figure>
-      <figure class="shot"><img src="render/iter/m24.jpg" alt="m24" loading="lazy"><figcaption>第 24 轮<span>构图裁切</span></figcaption></figure>
-    </div>
-  </div>
-</section>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader }    from 'three/addons/loaders/GLTFLoader.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
-<section id="notes">
-  <div class="wrap">
-    <h2><span class="n">06</span>过程中修掉的四个真问题</h2>
-    <p class="sub">外观对不上，往往不是审美问题，是这几处。</p>
-    <ol class="steps">
-      <li><b>色调映射选错。</b><p>一直用 AgX，它持续压缩与去饱和，颜色怎么调都不对。换成 Standard 后才可控。</p></li>
-      <li><b>Blender 面积光照度 ≈ P/(π·d²)，不是点光的 P/(4π·d²)，差 4 倍。</b>
-        <p>按点光公式估瓦数会整体过曝 4 倍。</p></li>
-      <li><b>面光朝向向量取反。</b><p>所有补光都背着主体照，画面发平却看不出原因。</p></li>
-      <li><b>车内灯从车窗洞口漏光。</b><p>把下裙照得比预期亮约 1.7 倍，直接破坏校色基准。</p></li>
-    </ol>
-  </div>
-</section>
+/* ============================================================ helpers */
+// Blender(Z-up, +X forward, +Y left) -> three(Y-up) : (x, y, z) -> (x, z, -y)
+const B = (x, y, z) => new THREE.Vector3(x, z, -y);
 
-<section id="code">
-  <div class="wrap">
-    <h2><span class="n">07</span>工程与脚本</h2>
-    <p class="sub">改动几何或配色只需动对应模块，构建入口统一在 build.py。</p>
-    <table class="tbl">
-      <tbody>
-        <tr><td><span class="mono">build.py</span></td><td>入口：<span class="mono">-- &lt;tag&gt; &lt;view&gt; [车内灯增益] [仰角] [方位角] [焦距]</span></td></tr>
-        <tr><td><span class="mono">rv/spec.py</span></td><td>全部尺寸常量（唯一真源）</td></tr>
-        <tr><td><span class="mono">rv/lib_util.py</span></td><td>几何原语：loft / ring / band_sweep / revolve_y / flat_cap …</td></tr>
-        <tr><td><span class="mono">rv/lib_mat.py</span></td><td>程序化材质库，含参考图实测色表 <span class="mono">TARGET</span> 与换算 <span class="mono">alb()</span></td></tr>
-        <tr><td><span class="mono">rv/lib_studio.py</span></td><td>世界梯度 / 奶油摄影棚 / 相对机位布光 / 自动构图 / 像素回读</td></tr>
-        <tr><td><span class="mono">rv/build_*.py</span></td><td>车身 / 底盘动力 / 内饰 / 车顶设备 / 灯组细节</td></tr>
-        <tr><td><span class="mono">tools/match.py</span></td><td>闭环校色：在参考图与渲染的同一特征点取样比对色差</td></tr>
-        <tr><td><span class="mono">tools/scan.py · patches.py</span></td><td>参考图颜色扫描 / 定点取样</td></tr>
-        <tr><td><span class="mono">tools/bbox.py · stack.py</span></td><td>主体包围盒测量（反推机位） / 并排对比图</td></tr>
-        <tr><td><span class="mono">check.py</span></td><td>几何体检：遍历顶点打印越界对象</td></tr>
-      </tbody>
-    </table>
-  </div>
-</section>
+function orbitPose(tBlender, az, el, dist) {
+  const a = az * Math.PI / 180, e = el * Math.PI / 180;
+  const off = B(dist * Math.cos(e) * Math.cos(a),
+                dist * Math.cos(e) * Math.sin(a),
+                dist * Math.sin(e));
+  const t = B(...tBlender);
+  return { pos: t.clone().add(off), target: t };
+}
 
-<footer>
-  <div class="wrap">
-    全程序化生成 · 未使用任何外部模型 / 贴图 / HDRI ·
-    工程文件 <code>StarParkLuxuryBusRV_final.blend</code> ·
-    二维视觉设定转三维，非可生产图纸
-  </div>
-</footer>
+const $ = id => document.getElementById(id);
 
+/* ============================================================ scene */
+const app = $('app');
+const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.14;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.localClippingEnabled = true;
+app.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.05, 900);
+
+// warm dark gradient backdrop
+(function bg() {
+  const c = document.createElement('canvas'); c.width = 4; c.height = 256;
+  const g = c.getContext('2d').createLinearGradient(0, 0, 0, 256);
+  g.addColorStop(0, '#241d17'); g.addColorStop(0.48, '#171310'); g.addColorStop(1, '#0c0a09');
+  const ctx = c.getContext('2d'); ctx.fillStyle = g; ctx.fillRect(0, 0, 4, 256);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  scene.background = t;
+})();
+
+// studio environment for believable paint / chrome
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = 0.72;
+
+// lights
+const hemi = new THREE.HemisphereLight(0xfff0dc, 0x453a30, 0.98);
+scene.add(hemi);
+
+const sun = new THREE.DirectionalLight(0xfff2e0, 2.3);
+sun.position.set(11, 15, 8);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+sun.shadow.camera.near = 1; sun.shadow.camera.far = 60;
+sun.shadow.camera.left = -14; sun.shadow.camera.right = 14;
+sun.shadow.camera.top = 12; sun.shadow.camera.bottom = -12;
+sun.shadow.bias = -0.0006;
+sun.shadow.normalBias = 0.02;
+scene.add(sun);
+scene.add(sun.target);
+
+const fill = new THREE.DirectionalLight(0xdce6ff, 0.5);
+fill.position.set(-9, 6, -11);
+scene.add(fill);
+
+// warm cabin lights, switched on when you go inside (or x-ray the shell)
+const cabinLights = [];
+[[3.20, 0.0, 2.84], [0.60, 0.0, 2.84], [-2.10, 0.0, 2.84], [-4.60, 0.0, 2.90]]
+  .forEach(p => {
+    const l = new THREE.PointLight(0xffd2a0, 0, 8.5, 2);
+    l.position.copy(B(...p));
+    scene.add(l);
+    cabinLights.push(l);
+  });
+function setCabinLight(on) {
+  cabinLights.forEach(l => l.intensity = on ? 13 : 0);
+  hemi.intensity = on ? 1.6 : 0.98;
+  scene.environmentIntensity = on ? 1.0 : 0.72;
+}
+
+// ground
+const ground = new THREE.Mesh(
+  new THREE.CircleGeometry(70, 72),
+  new THREE.MeshStandardMaterial({ color: 0x3a3129, roughness: 0.70, metalness: 0.06 })
+);
+ground.rotation.x = -Math.PI / 2;
+ground.receiveShadow = true;
+scene.add(ground);
+
+/* ============================================================ controls */
+const orbit = new OrbitControls(camera, renderer.domElement);
+orbit.enableDamping = true;
+orbit.dampingFactor = 0.075;
+orbit.minDistance = 2.2;
+orbit.maxDistance = 90;
+orbit.maxPolarAngle = Math.PI * 0.98;
+orbit.autoRotateSpeed = 0.55;
+
+/* ============================================================ state */
+const S = {
+  mode: 'orbit',        // orbit | walk
+  xray: false,
+  roof: true, xrayHidRoof: false,
+  model: null,
+  groups: {},
+  walk: { yaw: 0, pitch: 0, keys: {}, vy: 0, speed: 2.6, fly: false },
+  anim: null,
+  pose: 'overview'
+};
+
+const INSIDE = {
+  minX: -5.55, maxX: 5.55, maxY: 1.03,
+  ceil: 2.94
+};
+// eye height follows the deck: the rear bedroom sits on a raised floor
+const eyeAt = x => (x < -1.83 ? 1.62 + 1.18 : 1.055 + 1.56);
+const clampInside = p => {
+  p.x = Math.min(INSIDE.maxX, Math.max(INSIDE.minX, p.x));
+  p.z = Math.min(INSIDE.maxY, Math.max(-INSIDE.maxY, p.z));
+  const f = eyeAt(p.x);
+  p.y = Math.min(INSIDE.ceil, Math.max(f - 0.30, p.y));
+};
+
+/* ============================================================ poses */
+const POSE = {
+  overview:  () => orbitPose([0.9, 0.7, 1.60], -48, 10, 15.5),
+  front:     () => orbitPose([3.6, 0.0, 1.70], -26, 9, 9.5),
+  rear:      () => orbitPose([-4.2, 0.0, 1.75], -150, 12, 10.5),
+  side:      () => orbitPose([0.0, 0.0, 1.70], -92, 6, 14),
+  roofview:  () => orbitPose([0.6, 0.0, 3.30], -62, 40, 11),
+  under:     () => orbitPose([-0.4, 0.0, 0.90], -70, -16, 9),
+  cockpit:   () => ({ pos: B(4.05, -0.05, 2.62), target: B(6.20, 0.10, 2.05) }),
+  lounge:    () => ({ pos: B(3.30, 0.10, 2.62), target: B(-0.60, 0.00, 2.55) }),
+  galley:    () => ({ pos: B(1.20, -0.20, 2.62), target: B(-2.60, 0.00, 2.50) }),
+  bedroom:   () => ({ pos: B(-2.05, 0.10, 2.76), target: B(-5.40, 0.10, 2.60) })
+};
+const WALKSPOT = {
+  cockpit: B(4.00, 0.00, 2.62), lounge: B(3.30, 0.10, 2.62),
+  galley: B(1.20, -0.20, 2.62), bedroom: B(-2.05, 0.10, 2.76)
+};
+
+const DOCK = [
+  ['外部', null],
+  ['overview', '整车主视角'],
+  ['front', '车头'],
+  ['rear', '车尾'],
+  ['side', '侧面'],
+  ['roofview', '车顶设备'],
+  ['under', '底盘'],
+  ['车内', null],
+  ['cockpit', '驾驶舱'],
+  ['lounge', '会客区'],
+  ['galley', '厨房'],
+  ['bedroom', '卧铺']
+];
+
+function buildDock() {
+  const d = $('dock');
+  d.innerHTML = '';
+  for (const [k, label] of DOCK) {
+    if (!label) { d.insertAdjacentHTML('beforeend', `<div class="grp">${k}</div>`); continue; }
+    const b = document.createElement('div');
+    b.className = 'dbtn'; b.dataset.pose = k;
+    b.innerHTML = `<i></i>${label}`;
+    b.onclick = () => goto(k);
+    d.appendChild(b);
+  }
+  markDock('overview');
+}
+function markDock(k) {
+  document.querySelectorAll('.dbtn').forEach(e =>
+    e.classList.toggle('on', e.dataset.pose === k));
+}
+
+/* ============================================================ camera moves */
+function setPose(p) { camera.position.copy(p.pos); orbit.target.copy(p.target); orbit.update(); }
+
+function animateTo(p, ms = 850) {
+  const p0 = camera.position.clone(), t0 = orbit.target.clone();
+  const p1 = p.pos, t1 = p.target;
+  let start = performance.now();
+  if (S.anim) cancelAnimationFrame(S.anim);
+  const step = now => {
+    const k = Math.min(1, (now - start) / ms);
+    const e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+    if (S.mode === 'walk') {          // walking: only move the position
+      camera.position.lerpVectors(p0, p1, e);
+    } else {
+      camera.position.lerpVectors(p0, p1, e);
+      orbit.target.lerpVectors(t0, t1, e);
+      orbit.update();
+    }
+    if (k < 1) S.anim = requestAnimationFrame(step);
+    else { S.anim = null; if (S.mode === 'orbit') setPose(p); }
+  };
+  S.anim = requestAnimationFrame(step);
+}
+
+const isInsidePose = k => ['cockpit', 'lounge', 'galley', 'bedroom'].includes(k);
+
+function faceTarget(pos, target) {
+  const d = new THREE.Vector3().subVectors(target, pos).normalize();
+  S.walk.yaw = Math.atan2(-d.x, -d.z);
+  S.walk.pitch = Math.asin(THREE.MathUtils.clamp(d.y, -1, 1));
+  applyLook();
+}
+
+function goto(k) {
+  const p = POSE[k]();
+  markDock(k);
+  S.pose = k;
+  if (isInsidePose(k)) {
+    if (S.mode !== 'walk') enterWalk(k);
+    else {
+      animateTo(p, 700);
+      setTimeout(() => faceTarget(p.pos, p.target), 40);
+    }
+  } else {
+    if (S.mode === 'walk') exitWalk();
+    animateTo(p);
+  }
+  flashHint(k);
+}
+
+function flashHint(k) {
+  const map = {
+    overview: '拖拽旋转 · 滚轮缩放 · 左侧可进入车内',
+    roofview: '车顶：无人机升降平台 · 驻车空调 · 回转炮塔',
+    under: '底盘：车架 · 车桥 · 悬架 · 传动 · 发动机',
+    cockpit: '车内漫游：WASD 移动，鼠标转视角，Esc 退出',
+    lounge: '车内漫游：WASD 移动，鼠标转视角，Esc 退出',
+    xray: '剖切：靠近相机的一半外壳被切开，可绕着走看内部结构'
+  };
+  const h = $('hint');
+  if (map[k]) { h.textContent = map[k]; h.classList.remove('hide'); clearTimeout(h._t);
+    h._t = setTimeout(() => h.classList.add('hide'), 4200); }
+}
+
+/* ============================================================ walk mode */
+function enterWalk(k) {
+  S.mode = 'walk';
+  document.body.classList.add('walk');
+  orbit.enabled = false;
+  const spot = WALKSPOT[k] || WALKSPOT.lounge;
+  const p = POSE[k]();
+  camera.position.copy(p.pos);
+  const dir = new THREE.Vector3().subVectors(p.target, p.pos).normalize();
+  S.walk.yaw = Math.atan2(-dir.x, -dir.z);
+  S.walk.pitch = Math.asin(THREE.MathUtils.clamp(dir.y, -1, 1));
+  hideDressing(true);
+  setCabinLight(true);
+  applyLook();
+  requestLock();
+}
+
+function exitWalk() {
+  S.mode = 'orbit';
+  document.body.classList.remove('walk');
+  orbit.enabled = true;
+  hideDressing(false);
+  setCabinLight(false);
+  orbit.target.copy(camera.position).add(
+    new THREE.Vector3(Math.sin(S.walk.yaw), 0, Math.cos(S.walk.yaw)).multiplyScalar(-9));
+  orbit.update();
+  if (document.pointerLockElement) document.exitPointerLock();
+  $('btnInside').classList.remove('on');
+}
+
+function requestLock() {
+  const el = renderer.domElement;
+  if (el.requestPointerLock) { try { el.requestPointerLock(); } catch (e) {} }
+}
+
+function applyLook() {
+  const e = new THREE.Euler(S.walk.pitch, S.walk.yaw, 0, 'YXZ');
+  camera.quaternion.setFromEuler(e);
+}
+
+/* pointer look */
+let dragging = false, lastX = 0, lastY = 0;
+renderer.domElement.addEventListener('mousemove', e => {
+  if (S.mode !== 'walk') return;
+  const locked = document.pointerLockElement === renderer.domElement;
+  if (!locked && !dragging) return;
+  const dx = locked ? e.movementX : (e.clientX - lastX);
+  const dy = locked ? e.movementY : (e.clientY - lastY);
+  lastX = e.clientX; lastY = e.clientY;
+  S.walk.yaw -= dx * 0.0026;
+  S.walk.pitch = THREE.MathUtils.clamp(S.walk.pitch - dy * 0.0022, -1.15, 1.15);
+  applyLook();
+});
+renderer.domElement.addEventListener('mousedown', e => {
+  if (S.mode === 'walk') { dragging = true; lastX = e.clientX; lastY = e.clientY; requestLock(); }
+});
+addEventListener('mouseup', () => dragging = false);
+
+/* touch look */
+let tId = null, tX = 0, tY = 0;
+renderer.domElement.addEventListener('touchstart', e => {
+  if (S.mode !== 'walk' || e.touches.length !== 1) return;
+  tId = e.touches[0].identifier; tX = e.touches[0].clientX; tY = e.touches[0].clientY;
+}, { passive: true });
+renderer.domElement.addEventListener('touchmove', e => {
+  if (S.mode !== 'walk' || tId === null) return;
+  const t = [...e.touches].find(x => x.identifier === tId); if (!t) return;
+  S.walk.yaw -= (t.clientX - tX) * 0.005;
+  S.walk.pitch = THREE.MathUtils.clamp(S.walk.pitch - (t.clientY - tY) * 0.004, -1.15, 1.15);
+  tX = t.clientX; tY = t.clientY; applyLook();
+}, { passive: true });
+renderer.domElement.addEventListener('touchend', () => tId = null);
+
+addEventListener('keydown', e => {
+  S.walk.keys[e.code] = true;
+  if (e.code === 'Escape' && S.mode === 'walk') exitWalk();
+  if (e.code === 'KeyF') { S.walk.fly = !S.walk.fly; flashHint(S.walk.fly ? 'overview' : 'under'); }
+  if (S.mode === 'walk' && ['KeyW','KeyA','KeyS','KeyD','Space','ShiftLeft'].includes(e.code)) e.preventDefault();
+});
+addEventListener('keyup', e => S.walk.keys[e.code] = false);
+
+function walkStep(dt) {
+  const k = S.walk.keys, sp = S.walk.speed * (k.ShiftLeft || k.ShiftRight ? 2.2 : 1);
+  const fwd = new THREE.Vector3(-Math.sin(S.walk.yaw), 0, -Math.cos(S.walk.yaw));
+  const rgt = new THREE.Vector3(Math.cos(S.walk.yaw), 0, -Math.sin(S.walk.yaw));
+  const mv = new THREE.Vector3();
+  if (k.KeyW) mv.add(fwd); if (k.KeyS) mv.sub(fwd);
+  if (k.KeyD) mv.add(rgt); if (k.KeyA) mv.sub(rgt);
+  if (k.Space) mv.y += 1; if (k.KeyQ || k.ControlLeft) mv.y -= 1;
+  if (mv.lengthSq() === 0) return;
+  camera.position.addScaledVector(mv.normalize(), sp * dt);
+  if (!S.walk.fly) clampInside(camera.position);
+}
+
+/* ============================================================ model */
+const loader = new GLTFLoader();
+const bar = $('bootbar'), bmsg = $('bootmsg');
+
+loader.load('web/model.glb', gltf => {
+  const root = gltf.scene;
+  root.traverse(o => {
+    if (!o.isMesh) return;
+    o.castShadow = true; o.receiveShadow = true;
+    const m = o.material;
+    if (m) {
+      m.side = THREE.DoubleSide;
+      if (m.transparent) { m.depthWrite = false; m.side = THREE.DoubleSide; }
+      m.envMapIntensity = 0.78;
+    }
+    const g = o.name.split('__')[0];
+    (S.groups[g] = S.groups[g] || []).push(o);
+  });
+  S.model = root;
+  scene.add(root);
+  $('boot').classList.add('gone');
+  setTimeout(() => $('boot').remove(), 700);
+  setPose(POSE.overview());
+  flashHint('overview');
+}, ev => {
+  if (ev.lengthComputable) bar.style.width = (ev.loaded / ev.total * 92) + '%';
+  bmsg.textContent = '正在载入模型… ' + (ev.loaded / 1048576).toFixed(1) + ' MB';
+}, err => {
+  console.error(err);
+  $('err').style.display = 'grid';
+  $('errmsg').innerHTML = '<b>模型载入失败</b><br><br>请确认 <code>web/model.glb</code> ' +
+    '与页面在同一站点下，并通过 http(s) 打开（直接双击本地文件会被浏览器的跨域策略拦截）。';
+});
+
+/* ============================================================ toggles */
+function setOpacity(objs, v) {
+  (objs || []).forEach(o => {
+    if (!o.material) return;
+    if (!o.material.__orig) {
+      o.material = o.material.clone();
+      o.material.__orig = { t: o.material.transparent, o: o.material.opacity,
+                            d: o.material.depthWrite };
+    }
+    const s = o.material.__orig;
+    if (v === null) {
+      o.material.transparent = s.t; o.material.opacity = s.o; o.material.depthWrite = s.d;
+    } else {
+      o.material.transparent = true; o.material.opacity = v; o.material.depthWrite = false;
+    }
+    o.material.needsUpdate = true;
+  });
+}
+
+function hideDressing(on) {
+  (S.groups.XD || []).forEach(o => { o.visible = !on; });
+}
+/* ---- section cut ------------------------------------------------------
+   The cabin is cream too, so a merely translucent skin reads as "no change".
+   Instead clip the half of the outer skin nearest the camera with a moving
+   clipping plane - that is an actual cutaway you can orbit around.        */
+const sectionPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+const VEHICLE_C = B(0.2, 0.0, 1.9);
+
+function setXray(on) {
+  S.xray = on;
+  if (on) setCabinLight(true); else if (S.mode !== 'walk') setCabinLight(false);
+  (S.groups.SHELL || []).forEach(o => {
+    const m = o.material;
+    if (!m) return;
+    if (!m.__orig) m.__orig = { c: m.clippingPlanes };
+    if (on) {
+      m.clippingPlanes = [sectionPlane];
+      m.clipShadows = true;
+      m.side = THREE.DoubleSide;
+    } else {
+      m.clippingPlanes = m.__orig.c || null;
+      m.clipShadows = false;
+    }
+    m.needsUpdate = true;
+  });
+  // float the roof off as well while sectioned
+  if (on) { (S.groups.ROOF || []).forEach(o => o.visible = false); S.xrayHidRoof = true; }
+  else if (S.xrayHidRoof) { (S.groups.ROOF || []).forEach(o => o.visible = S.roof); S.xrayHidRoof = false; }
+  $('btnXray').classList.toggle('on', on);
+}
+
+function updateSection() {
+  const n = new THREE.Vector3().subVectors(VEHICLE_C, camera.position);
+  n.y = 0;
+  if (n.lengthSq() < 1e-6) return;
+  n.normalize();
+  sectionPlane.setFromNormalAndCoplanarPoint(n, VEHICLE_C);
+}
+
+$('btnXray').onclick = () => { setXray(!S.xray); flashHint('xray'); };
+$('btnSpin').onclick = e => {
+  orbit.autoRotate = !orbit.autoRotate;
+  e.currentTarget.classList.toggle('on', orbit.autoRotate);
+};
+$('btnRoof').onclick = e => {
+  S.roof = !S.roof;
+  (S.groups.ROOF || []).forEach(o => o.visible = S.roof);
+  e.currentTarget.classList.toggle('on', !S.roof);
+};
+$('btnInside').onclick = () => {
+  if (S.mode === 'walk') { exitWalk(); goto('overview'); return; }
+  $('btnInside').classList.add('on');
+  goto('lounge');
+};
+
+/* ============================================================ loop */
+addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+let prev = performance.now();
+function loop(now) {
+  const dt = Math.min(0.05, (now - prev) / 1000); prev = now;
+  if (S.mode === 'walk') {
+    walkStep(dt);
+    if (!S.walk.fly) clampInside(camera.position);
+  } else {
+    orbit.update();
+    if (S.xray) updateSection();
+    sun.position.copy(camera.position).multiplyScalar(0.35).setY(14).add(new THREE.Vector3(6, 0, 5));
+    sun.target.position.copy(camera.position).setY(1.5);
+    sun.target.updateMatrixWorld();
+  }
+  renderer.render(scene, camera);
+  requestAnimationFrame(loop);
+}
+
+buildDock();
+requestAnimationFrame(loop);
+setTimeout(() => { const h = $('hint'); if (h) h.classList.add('hide'); }, 9000);
+</script>
 </body>
 </html>

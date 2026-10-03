@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>星泊豪华大巴房车 · 程序化 3D 重建</title>
+<style>
+  :root{
+    --bg:#141110; --bg2:#1c1815; --card:#221d19; --card2:#2a231d;
+    --line:#3a3029; --txt:#efe6da; --dim:#a8968a;
+    --amber:#d9a95c; --amber2:#f0c47a; --orange:#e08a45; --cream:#efe0cb;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:
+      radial-gradient(1200px 600px at 78% -8%, #2e2419 0%, transparent 62%),
+      radial-gradient(900px 500px at 8% 12%, #241d17 0%, transparent 58%),
+      var(--bg);
+    color:var(--txt);
+    font-family:"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    line-height:1.62; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:0 26px}
+  a{color:var(--amber2)}
+  img{max-width:100%;display:block}
+
+  /* ---------- hero ---------- */
+  header{padding:74px 0 30px;border-bottom:1px solid var(--line)}
+  .kicker{
+    font-size:12.5px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--amber);margin:0 0 16px
+  }
+  h1{
+    margin:0 0 14px;font-size:clamp(30px,4.6vw,52px);line-height:1.12;
+    font-weight:700;letter-spacing:.01em;
+    background:linear-gradient(96deg,#fbeed6 0%,var(--amber2) 44%,var(--orange) 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .lede{max-width:760px;color:var(--dim);font-size:16.5px;margin:0 0 26px}
+  .chips{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:34px}
+  .chip{
+    font-size:12.5px;padding:6px 13px;border-radius:999px;
+    background:#2b231c;border:1px solid #46392d;color:#e2d2bb
+  }
+  .chip b{color:var(--amber2);font-weight:600}
+
+  /* ---------- sections ---------- */
+  section{padding:58px 0;border-bottom:1px solid var(--line)}
+  h2{
+    margin:0 0 8px;font-size:clamp(20px,2.4vw,27px);font-weight:650;
+    letter-spacing:.01em;color:var(--cream)
+  }
+  h2 .n{
+    display:inline-block;width:30px;color:var(--orange);
+    font-variant-numeric:tabular-nums
+  }
+  .sub{color:var(--dim);margin:0 0 30px;font-size:14.5px}
+
+  /* ---------- cards ---------- */
+  .shot{
+    background:linear-gradient(180deg,var(--card2),var(--card));
+    border:1px solid var(--line);border-radius:15px;overflow:hidden;
+    box-shadow:0 14px 40px -22px #000, 0 0 0 1px #ffffff08 inset;
+    transition:transform .35s cubic-bezier(.2,.8,.3,1),box-shadow .35s,border-color .35s;
+  }
+  .shot:hover{
+    transform:translateY(-5px);border-color:#5b4732;
+    box-shadow:0 26px 60px -26px #000, 0 0 34px -12px #d9a95c55
+  }
+  .shot img{width:100%;background:#100d0b}
+  .shot figcaption{
+    padding:13px 16px;font-size:13.5px;color:#cdbcab;
+    border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    gap:12px;align-items:baseline
+  }
+  .shot figcaption span{color:#7d6b5c;font-size:12px}
+  figure{margin:0}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  @media(max-width:880px){.grid2,.grid3{grid-template-columns:1fr}}
+
+  /* ---------- table ---------- */
+  .tbl{width:100%;border-collapse:collapse;font-size:14px;margin-top:6px}
+  .tbl th,.tbl td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left}
+  .tbl th{color:var(--dim);font-weight:500;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase}
+  .tbl td:first-child{color:#dccdb9}
+  .sw{display:inline-block;width:44px;height:15px;border-radius:4px;
+      vertical-align:-2px;margin-right:9px;border:1px solid #ffffff1f}
+  .num{font-variant-numeric:tabular-nums}
+  .good{color:#8fd08a;font-weight:600}
+  .mono{font-family:"Cascadia Mono",Consolas,monospace;font-size:13px;color:#cbb9a5}
+
+  /* ---------- steps ---------- */
+  ol.steps{margin:0;padding-left:0;list-style:none;counter-reset:s}
+  ol.steps li{
+    counter-increment:s;position:relative;padding:0 0 22px 46px;
+    border-left:1px solid var(--line);margin-left:12px
+  }
+  ol.steps li:last-child{border-left-color:transparent;padding-bottom:0}
+  ol.steps li::before{
+    content:counter(s,decimal-leading-zero);position:absolute;left:-13px;top:0;
+    width:26px;height:26px;border-radius:8px;background:#2e2419;border:1px solid #52402c;
+    color:var(--amber2);font-size:11.5px;display:grid;place-items:center;
+    font-variant-numeric:tabular-nums
+  }
+  ol.steps b{color:var(--cream);font-weight:600}
+  ol.steps p{margin:3px 0 0;color:var(--dim);font-size:14px}
+
+  footer{padding:44px 0 68px;color:#7d6b5c;font-size:13px}
+  footer code{color:#cbb9a5}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <p class="kicker">Procedural 3D · Blender Eevee · 2026</p>
+    <h1>星泊豪华大巴房车</h1>
+    <p class="lede">
+      依据设定图集 <b>D_星泊豪华大巴房车</b> 全程序化重建：几何由 bpy/bmesh 生成，
+      材质全部为程序化节点，未导入任何外部模型、贴图或 HDRI。
+      本轮重点是把外观的<b>颜色与质感</b>对齐主参考图，用取样 + 光学换算做闭环校色，
+      平均色差从 129/255 收敛到 <b>7.3/255</b>。
+    </p>
+    <div class="chips">
+      <span class="chip">外形 <b>12.00 × 2.55 × 3.62 m</b></span>
+      <span class="chip">含车顶设备 <b>4.13 m</b></span>
+      <span class="chip">三轴六轮</span>
+      <span class="chip"><b>772</b> 对象 / 约 <b>4.8 万</b> 顶点</span>
+      <span class="chip">Eevee · 2560×1440 · 224 spp</span>
+      <span class="chip">迭代 <b>33</b> 轮</span>
+      <span class="chip">平均色差 <b>Δ 7.3 / 255</b></span>
+    </div>
+  </div>
+</header>
+
+<section id="compare">
+  <div class="wrap">
+    <h2><span class="n">01</span>参考图 / 渲染 并排</h2>
+    <p class="sub">上图：设定图 D_01（整车主参考） · 下图：本工程渲染。机位、配色、腰线、下裙、车窗、轮毂逐项对齐。</p>
+    <figure class="shot">
+      <img src="render/compare_ref_vs_render.png" alt="参考图与渲染并排对比">
+      <figcaption>参考图 vs 渲染<span>同尺寸上下拼接</span></figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="hero">
+  <div class="wrap">
+    <h2><span class="n">02</span>主图</h2>
+    <p class="sub">对齐 D_01 的机位：方位角 −48°，仰角 9°，48–50 mm 广角近距，得到参考图那种强透视浅俯视。</p>
+    <figure class="shot">
+      <img src="render/shot_final_beauty.png" alt="主渲染图">
+      <figcaption>主图 · 三分之四视角<span>2560 × 1440</span></figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="views">
+  <div class="wrap">
+    <h2><span class="n">03</span>多视角</h2>
+    <p class="sub">车头、车尾、剖视（内部结构）、底盘仰视（车架 / 发动机 / 悬架 / 传动）、前侧低角。</p>
+    <div class="grid2" style="margin-bottom:20px">
+      <figure class="shot">
+        <img src="render/shot_final_f34.png" alt="前 3/4" loading="lazy">
+        <figcaption>前 3/4 视角<span>风挡 / 灯组 / 车门 / 后视镜</span></figcaption>
+      </figure>
+      <figure class="shot">
+        <img src="render/shot_final_rear34.png" alt="后 3/4" loading="lazy">
+        <figcaption>后 3/4 视角<span>尾库门 / 尾灯 / 炮塔 / 无人机平台</span></figcaption>
+      </figure>
+    </div>
+    <div class="grid3">
+      <figure class="shot">
+        <img src="render/shot_final_cut.png" alt="剖视" loading="lazy">
+        <figcaption>剖视<span>驾驶舱→会客→厨卫→卧铺</span></figcaption>
+      </figure>
+      <figure class="shot">
+        <img src="render/shot_final_chassis.png" alt="底盘仰视" loading="lazy">
+        <figcaption>底盘仰视<span>车架 / 车桥 / 排气 / 发动机</span></figcaption>
+      </figure>
+      <figure class="shot">
+        <img src="render/shot_final_under.png" alt="前侧低角" loading="lazy">
+        <figcaption>前侧低角<span>地面反射与接触阴影</span></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section id="color">
+  <div class="wrap">
+    <h2><span class="n">04</span>配色对齐</h2>
+    <p class="sub">
+      场景由近似均匀的暖奶油环境照明，此时 <span class="mono">渲染值 = 反照率 × 环境辐亮度</span>，
+      所以 <span class="mono">albedo = target / ENV</span>。参考图逐点取样 → 反推材质基色 → 渲染后回测色差。
+    </p>
+    <table class="tbl">
+      <thead><tr><th>部位</th><th>参考图实测</th><th>本工程渲染</th><th class="num">Δ</th></tr></thead>
+      <tbody>
+        <tr><td>车身上部</td><td><i class="sw" style="background:#EBDCCE"></i>#EBDCCE</td><td><i class="sw" style="background:#EBDACB"></i>#EBDACB</td><td class="num good">1.7</td></tr>
+        <tr><td>车身下部</td><td><i class="sw" style="background:#ECDACA"></i>#ECDACA</td><td><i class="sw" style="background:#E7D6C7"></i>#E7D6C7</td><td class="num good">4.0</td></tr>
+        <tr><td>腰线（香槟驼）</td><td><i class="sw" style="background:#CFAB89"></i>#CFAB89</td><td><i class="sw" style="background:#D7AA80"></i>#D7AA80</td><td class="num good">6.0</td></tr>
+        <tr><td>下裙（深暖灰）</td><td><i class="sw" style="background:#574A42"></i>#574A42</td><td><i class="sw" style="background:#4C453F"></i>#4C453F</td><td class="num good">6.3</td></tr>
+        <tr><td>下裙下缘</td><td><i class="sw" style="background:#5C4F48"></i>#5C4F48</td><td><i class="sw" style="background:#504841"></i>#504841</td><td class="num good">8.7</td></tr>
+        <tr><td>轮胎</td><td><i class="sw" style="background:#302923"></i>#302923</td><td><i class="sw" style="background:#2A2623"></i>#2A2623</td><td class="num good">3.0</td></tr>
+        <tr><td>轮圈（暗青铜）</td><td><i class="sw" style="background:#8E725D"></i>#8E725D</td><td><i class="sw" style="background:#876B56"></i>#876B56</td><td class="num good">7.0</td></tr>
+        <tr><td>车窗（暖光内装）</td><td><i class="sw" style="background:#764620"></i>#764620</td><td><i class="sw" style="background:#675344"></i>#675344</td><td class="num">21.3</td></tr>
+        <tr><td colspan="3"><b>平均</b></td><td class="num good">7.3</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="iter">
+  <div class="wrap">
+    <h2><span class="n">05</span>迭代过程</h2>
+    <p class="sub">
+      33 轮。第 1 帧是初版——车身壳体的拉伸漏传了高度中心，整个车体被建在地面以下，
+      画面上看到的其实只是前后端盖加内饰。
+    </p>
+    <figure class="shot" style="margin-bottom:20px">
+      <img src="render/iter/iteration_sheet.jpg" alt="迭代总览" loading="lazy">
+      <figcaption>全部迭代帧总览<span>50 帧</span></figcaption>
+    </figure>
+    <div class="grid3">
+      <figure class="shot"><img src="render/iter/v1.jpg" alt="v1" loading="lazy"><figcaption>初版<span>车体被埋在地下</span></figcaption></figure>
+      <figure class="shot"><img src="render/iter/m01.jpg" alt="m01" loading="lazy"><figcaption>第 1 轮<span>换色调映射 + 重建材质</span></figcaption></figure>
+      <figure class="shot"><img src="render/iter/m05.jpg" alt="m05" loading="lazy"><figcaption>第 5 轮<span>压制车内漏光</span></figcaption></figure>
+      <figure class="shot"><img src="render/iter/m09.jpg" alt="m09" loading="lazy"><figcaption>第 9 轮<span>车窗暖光</span></figcaption></figure>
+      <figure class="shot"><img src="render/iter/m16.jpg" alt="m16" loading="lazy"><figcaption>第 16 轮<span>广角透视</span></figcaption></figure>
+      <figure class="shot"><img src="render/iter/m24.jpg" alt="m24" loading="lazy"><figcaption>第 24 轮<span>构图裁切</span></figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section id="notes">
+  <div class="wrap">
+    <h2><span class="n">06</span>过程中修掉的四个真问题</h2>
+    <p class="sub">外观对不上，往往不是审美问题，是这几处。</p>
+    <ol class="steps">
+      <li><b>色调映射选错。</b><p>一直用 AgX，它持续压缩与去饱和，颜色怎么调都不对。换成 Standard 后才可控。</p></li>
+      <li><b>Blender 面积光照度 ≈ P/(π·d²)，不是点光的 P/(4π·d²)，差 4 倍。</b>
+        <p>按点光公式估瓦数会整体过曝 4 倍。</p></li>
+      <li><b>面光朝向向量取反。</b><p>所有补光都背着主体照，画面发平却看不出原因。</p></li>
+      <li><b>车内灯从车窗洞口漏光。</b><p>把下裙照得比预期亮约 1.7 倍，直接破坏校色基准。</p></li>
+    </ol>
+  </div>
+</section>
+
+<section id="code">
+  <div class="wrap">
+    <h2><span class="n">07</span>工程与脚本</h2>
+    <p class="sub">改动几何或配色只需动对应模块，构建入口统一在 build.py。</p>
+    <table class="tbl">
+      <tbody>
+        <tr><td><span class="mono">build.py</span></td><td>入口：<span class="mono">-- &lt;tag&gt; &lt;view&gt; [车内灯增益] [仰角] [方位角] [焦距]</span></td></tr>
+        <tr><td><span class="mono">rv/spec.py</span></td><td>全部尺寸常量（唯一真源）</td></tr>
+        <tr><td><span class="mono">rv/lib_util.py</span></td><td>几何原语：loft / ring / band_sweep / revolve_y / flat_cap …</td></tr>
+        <tr><td><span class="mono">rv/lib_mat.py</span></td><td>程序化材质库，含参考图实测色表 <span class="mono">TARGET</span> 与换算 <span class="mono">alb()</span></td></tr>
+        <tr><td><span class="mono">rv/lib_studio.py</span></td><td>世界梯度 / 奶油摄影棚 / 相对机位布光 / 自动构图 / 像素回读</td></tr>
+        <tr><td><span class="mono">rv/build_*.py</span></td><td>车身 / 底盘动力 / 内饰 / 车顶设备 / 灯组细节</td></tr>
+        <tr><td><span class="mono">tools/match.py</span></td><td>闭环校色：在参考图与渲染的同一特征点取样比对色差</td></tr>
+        <tr><td><span class="mono">tools/scan.py · patches.py</span></td><td>参考图颜色扫描 / 定点取样</td></tr>
+        <tr><td><span class="mono">tools/bbox.py · stack.py</span></td><td>主体包围盒测量（反推机位） / 并排对比图</td></tr>
+        <tr><td><span class="mono">check.py</span></td><td>几何体检：遍历顶点打印越界对象</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    全程序化生成 · 未使用任何外部模型 / 贴图 / HDRI ·
+    工程文件 <code>StarParkLuxuryBusRV_final.blend</code> ·
+    二维视觉设定转三维，非可生产图纸
+  </div>
+</footer>
+
+</body>
+</html>
