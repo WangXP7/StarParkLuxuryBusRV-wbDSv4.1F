@@ -114,6 +114,8 @@ python tools/match.py <参考图.png> render/shot_final_beauty.png render/anchor
 
 仓库根目录的 `index.html` 是一个 Three.js 单页应用，可在浏览器里实际操控模型。
 
+**线上地址**：https://starpark-coach-3d.app.workbuddy.host/
+
 **入口**：`index.html`（3D 交互） · `gallery.html`（渲染图集与迭代记录）
 
 | 功能 | 说明 |
