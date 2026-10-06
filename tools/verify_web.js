@@ -1,6 +1,6 @@
 // Verify the interactive page: load, console errors, exterior / interior shots.
 const { chromium } = require('playwright-core');
-const EXE = 'C:/Users/USER/AppData/Local/ms-playwright/chromium-1234/chrome-win64/chrome.exe';
+const EXE = process.env.CHROME_PATH; // 本机 Chromium/Chrome 可执行文件路径(如 ms-playwright 缓存中的 chrome.exe)
 const URL = process.argv[2] || 'http://127.0.0.1:8137/index.html';
 const OUT = process.argv[3] || 'tools/shots';
 

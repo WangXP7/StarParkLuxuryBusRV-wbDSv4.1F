@@ -27,8 +27,8 @@
 ## 2. 复现方式
 
 ```bash
-BL="PRIVACY-REDACTED/PRIVACY-REDACTED/blender-mcp/blender-5.2.2-windows-x64/blender.exe"
-cd PRIVACY-REDACTED/Blender/StarParkLuxuryBusRV-wbDSv4.1F
+BL="blender"   # 改为指向本机 Blender 5.2 可执行文件
+cd <仓库根目录>
 "$BL" -b --factory-startup --python build.py -- final beauty
 "$BL" -b --factory-startup --python build.py -- final f34 0.0 12 -28 52
 "$BL" -b --factory-startup --python build.py -- final rear34 0.0 13 -140 54
